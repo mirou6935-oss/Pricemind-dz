@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#14041f">
+<title>PriceMind AI</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--gold:#f5c542;--gold2:#c8921b;--bg:#10031a;--card:#1a0b2a;--txt:#f3e9ff;--mut:#a995c4;--good:#3ddc61;--bad:#ff4d4d;--warn:#ffb020}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:radial-gradient(circle at 50% 0,#2a0f47,var(--bg) 60%);color:var(--txt);font-family:Cairo,Tahoma,sans-serif;min-height:100%}
+#app{max-width:480px;margin:auto;padding:calc(env(safe-area-inset-top,0px) + 12px) 14px calc(env(safe-area-inset-bottom,0px) + 90px)}
+header{text-align:center;position:relative;margin-bottom:12px}
+header h1{margin:0;font-size:32px;font-weight:800;background:linear-gradient(#ffe38a,var(--gold2));-webkit-background-clip:text;background-clip:text;color:transparent;font-family:Cairo,sans-serif;direction:ltr}
+header p{margin:0;color:var(--gold);font-size:15px}
+.ic{position:absolute;top:6px;background:none;border:0;font-size:24px;color:var(--gold);cursor:pointer}
+#gear{left:0}#crown{right:0}
+.card{background:linear-gradient(160deg,#241039,var(--card));border:1px solid rgba(245,197,66,.55);border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 0 18px rgba(245,197,66,.1)}
+label{display:block;color:var(--gold);font-size:13px;margin:8px 0 4px}
+input,select{width:100%;background:#0d0216;border:1px solid rgba(245,197,66,.5);border-radius:12px;color:var(--txt);padding:12px;font:inherit;font-size:16px;outline:none}
+input:focus,select:focus{border-color:var(--gold)}
+.row{display:flex;gap:8px}.row>*{flex:1}.row>.sm{flex:.6}
+.btn{width:100%;margin-top:12px;padding:13px;border:0;border-radius:14px;font:inherit;font-weight:800;font-size:18px;color:#2b1700;background:linear-gradient(#ffe07a,var(--gold2));cursor:pointer}
+.btn:disabled{opacity:.6}
+.btn.sec{background:none;color:var(--gold);border:1px solid var(--gold);font-size:15px;margin-top:8px}
+h3{margin:0 0 8px;color:var(--gold);font-size:17px}
+.specs div{display:flex;justify-content:space-between;gap:10px;padding:6px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:14px}
+.specs span:first-child{color:var(--mut)}.specs span:last-child{text-align:left;direction:ltr}
+.srcs{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:8px}
+.src{background:#0d0216;border-radius:12px;padding:10px 4px;text-align:center;font-size:12px;border:1px solid rgba(255,255,255,.07)}
+.src b{display:block;font-size:16px;margin:4px 0 2px;direction:ltr}
+.src small{color:var(--mut)}
+.lo{color:var(--good)}.hi{color:var(--warn)}
+.avg{display:flex;justify-content:space-between;align-items:center;margin-top:10px;border:1px solid var(--gold);border-radius:30px;padding:8px 16px}
+.avg b{font-size:22px;color:var(--gold);direction:ltr}
+.verdict{display:flex;align-items:center;gap:10px}
+.verdict svg{width:46%;flex:none}
+.vt{font-size:24px;font-weight:800}.vs{font-size:12px;color:var(--mut);margin-top:4px}
+.src-links a{display:block;color:var(--mut);font-size:12px;margin:3px 0;word-break:break-all}
+.hist{display:flex;justify-content:space-between;align-items:center;cursor:pointer}
+.hist small{color:var(--mut)}
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{text-align:center;padding:14px 6px}.stat b{display:block;font-size:26px;color:var(--gold)}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:8px;padding:8px 12px calc(env(safe-area-inset-bottom,0px) + 8px);background:rgba(16,3,26,.92);backdrop-filter:blur(8px)}
+nav button{flex:1;max-width:150px;background:none;border:1px solid rgba(245,197,66,.5);border-radius:16px;color:var(--gold);padding:8px;font:inherit;font-size:13px;cursor:pointer}
+nav button span{display:block;font-size:20px}
+nav button.on{background:rgba(245,197,66,.15);border-color:var(--gold)}
+.pg{display:none}.pg.on{display:block}
+.spin{width:36px;height:36px;border:4px solid #3a2358;border-top-color:var(--gold);border-radius:50%;animation:r 1s linear infinite;margin:16px auto}
+@keyframes r{to{transform:rotate(360deg)}}
+.err{color:#ff8a8a;text-align:center;font-size:14px}
+#modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;align-items:center;justify-content:center;padding:16px;z-index:9}
+#modal.on{display:flex}#modal .card{width:100%;max-width:420px;background:#1a0b2a}
+.hint{font-size:12px;color:var(--mut);margin-top:6px;line-height:1.7}
+.hint a{color:var(--gold)}
+</style>
+</head>
+<body>
+<div id="app">
+<header>
+  <button class="ic" id="crown" aria-label="premium">👑</button>
+  <button class="ic" id="gear" aria-label="settings">⚙️</button>
+  <h1>PriceMind AI</h1>
+  <p>اعرف السعر الحقيقي .. بذكاء</p>
+</header>
+
+<section class="pg on" id="p-home">
+  <div class="card">
+    <label>اسم السلعة</label>
+    <input id="name" placeholder="مثال: iPhone 15 Pro 256GB" autocomplete="off">
+    <div class="row">
+      <div><label>السعر المذكور</label><input id="price" type="number" inputmode="decimal" placeholder="1200"></div>
+      <div class="sm"><label>العملة</label><select id="cur"><option>DZD</option><option>USD</option><option>EUR</option><option>MAD</option><option>TND</option><option>SAR</option><option>EGP</option></select></div>
+    </div>
+    <button class="btn" id="go">✨ ابدأ البحث</button>
+  </div>
+  <div id="out"></div>
+</section>
+
+<section class="pg" id="p-hist"><div id="histList"></div></section>
+<section class="pg" id="p-stats"><div id="statsBox"></div></section>
+</div>
+
+<nav>
+  <button data-p="home" class="on"><span>🏠</span>الرئيسية</button>
+  <button data-p="hist"><span>🕘</span>السجل</button>
+  <button data-p="stats"><span>📊</span>إحصائيات</button>
+</nav>
+
+<div id="modal"><div class="card">
+  <h3>⚙️ الإعدادات</h3>
+  <label>مفتاح Gemini API</label>
+  <input id="key" type="password" placeholder="AIza..." dir="ltr">
+  <label>النموذج</label>
+  <input id="model" dir="ltr">
+  <div class="hint">احصل على مفتاح مجاني من <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio</a>. يُحفظ المفتاح على جهازك فقط.</div>
+  <button class="btn" id="save">حفظ</button>
+  <button class="btn sec" id="close">إغلاق</button>
+</div></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const store={get(k,d){try{const v=JSON.parse(localStorage.getItem(k));return v??d}catch{return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch{}}};
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const fmt=n=>Number(n).toLocaleString('en',{maximumFractionDigits:0});
+const safeUrl=u=>/^https?:\/\//i.test(u||'')?u:'';
+
+// navigation
+document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('nav button').forEach(x=>x.classList.toggle('on',x===b));
+  document.querySelectorAll('.pg').forEach(p=>p.classList.toggle('on',p.id==='p-'+b.dataset.p));
+  if(b.dataset.p==='hist')renderHist();
+  if(b.dataset.p==='stats')renderStats();
+});
+
+// settings
+const openSet=()=>{$('#key').value=store.get('key','');$('#model').value=store.get('model','gemini-2.5-flash');$('#modal').classList.add('on')};
+$('#gear').onclick=openSet;$('#close').onclick=()=>$('#modal').classList.remove('on');
+$('#save').onclick=()=>{store.set('key',$('#key').value.trim());store.set('model',$('#model').value.trim()||'gemini-2.5-flash');$('#modal').classList.remove('on')};
+$('#crown').onclick=()=>alert('قريباً: النسخة المميزة 👑');
+$('#cur').value=store.get('cur','DZD');
+
+// verdict logic
+function verdict(price,avg){
+  const d=(price-avg)/avg;
+  let t,c,i,s;
+  if(d<=-0.10){t='سعر ممتاز';c='var(--good)';i='✔';s='أقل من متوسط السوق بشكل واضح، تأكد من حالة السلعة وموثوقية البائع.'}
+  else if(d<=0.08){t='السعر جيد';c='var(--good)';i='✔';s='السعر قريب من متوسط السوق.'}
+  else if(d<=0.20){t='مرتفع قليلاً';c='var(--warn)';i='⚠';s='أعلى من متوسط السوق، حاول التفاوض.'}
+  else{t='السعر مرتفع';c='var(--bad)';i='✖';s='أعلى بكثير من متوسط السوق، ابحث عن عرض آخر.'}
+  return{d,t,c,i,s};
+}
+function gauge(d){
+  const a=Math.max(-1,Math.min(1,-d/0.3))*80;
+  return `<svg viewBox="0 0 120 75"><defs><linearGradient id="g"><stop offset="0" stop-color="#ff3b3b"/><stop offset=".5" stop-color="#ffd23b"/><stop offset="1" stop-color="#3ddc61"/></linearGradient></defs>
+  <path d="M12 62 A48 48 0 0 1 108 62" fill="none" stroke="url(#g)" stroke-width="12" stroke-linecap="round"/>
+  <g transform="rotate(${a} 60 62)"><line x1="60" y1="62" x2="60" y2="24" stroke="#f5c542" stroke-width="4" stroke-linecap="round"/></g><circle cx="60" cy="62" r="6" fill="#f5c542"/></svg>`;
+}
+
+function render(r){
+  const {data,price,cur}=r;
+  const ps=(data.prices||[]).filter(p=>+p.price>0);
+  if(!ps.length){$('#out').innerHTML='<div class="card err">لم يجد الذكاء الاصطناعي أسعاراً كافية. جرّب اسماً أدق للسلعة.</div>';return}
+  const avg=ps.reduce((a,p)=>a+ +p.price,0)/ps.length;
+  const v=verdict(price,avg);
+  const specs=(data.specs||[]).map(s=>`<div><span>${esc(s.k)}</span><span>${esc(s.v)}</span></div>`).join('');
+  const src=ps.map(p=>{
+    const x=+p.price,cl=x<avg*.95?'lo':x>avg*1.05?'hi':'';
+    const lb=x<avg*.95?'منخفض':x>avg*1.05?'مرتفع':'متوسط';
+    const u=safeUrl(p.url);
+    const inner=`${esc(p.source)}<b class="${cl}">${fmt(x)}</b><small>(${lb})${p.note?' · '+esc(p.note):''}</small>`;
+    return u?`<a class="src" href="${esc(u)}" target="_blank" rel="noopener" style="color:inherit;text-decoration:none">${inner}</a>`:`<div class="src">${inner}</div>`;
+  }).join('');
+  const links=(r.links||[]).map(l=>`<a href="${esc(safeUrl(l.uri))}" target="_blank" rel="noopener">🔗 ${esc(l.title||l.uri)}</a>`).join('');
+  $('#out').innerHTML=`
+  <div class="card"><h3>${esc(data.name||r.name)} ${data.brand?'· '+esc(data.brand):''}</h3>
+    <div class="specs">${specs||'<small>لا توجد مواصفات</small>'}</div></div>
+  <div class="card"><h3>📈 تحليل الأسعار من جميع المصادر</h3>
+    <div class="srcs">${src}</div>
+    <div class="avg"><span>متوسط السعر في السوق</span><b>${fmt(avg)} ${esc(cur)}</b></div>
+    ${data.summary?`<div class="hint">${esc(data.summary)}</div>`:''}</div>
+  <div class="card"><h3>⚖️ الحكم على السعر</h3>
+    <div class="verdict">${gauge(v.d)}<div><div class="vt" style="color:${v.c}">${v.t} ${v.i}</div>
+    <div class="vs">سعرك ${fmt(price)} ${esc(cur)} (${v.d>0?'+':''}${(v.d*100).toFixed(0)}% عن المتوسط). ${v.s}</div></div></div></div>
+  ${links?`<div class="card src-links"><h3>المصادر</h3>${links}</div>`:''}`;
+  return{avg,d:v.d,t:v.t};
+}
+
+class NetErr extends Error{}
+class ApiErr extends Error{constructor(m,st){super(m);this.status=st}}
+async function call(model,key,prompt,useSearch){
+  const body={contents:[{parts:[{text:prompt}]}]};
+  if(useSearch)body.tools=[{google_search:{}}];
+  let res;
+  try{
+    res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{
+      method:'POST',headers:{'Content-Type':'application/json','x-goog-api-key':key},body:JSON.stringify(body)});
+  }catch(e){throw new NetErr('net')}
+  let j={};try{j=await res.json()}catch{}
+  if(!res.ok)throw new ApiErr(j.error?.message||('HTTP '+res.status),res.status);
+  const cand=j.candidates?.[0];
+  const text=(cand?.content?.parts||[]).map(p=>p.text||'').join('');
+  const m=text.match(/\{[\s\S]*\}/);
+  if(!m)throw new ApiErr('empty',0);
+  let data;try{data=JSON.parse(m[0])}catch{throw new ApiErr('parse',0)}
+  const links=(cand?.groundingMetadata?.groundingChunks||[]).map(c=>c.web).filter(Boolean).slice(0,5);
+  return{data,links};
+}
+async function ask(name,cur){
+  const key=store.get('key','');
+  const model=store.get('model','gemini-2.5-flash');
+  const prompt=`أنت خبير أسعار. ابحث في الويب عن السلعة: "${name}" في سوق المستخدم (الجزائر ما لم يُذكر غير ذلك). ابحث في Ouedkniss وFacebook Marketplace وGoogle Shopping وJumia وeBay وAmazon وأي مواقع إعلانات مناسبة.
+أعد JSON فقط بدون أي نص آخر وبدون markdown بهذا الشكل:
+{"name":"","brand":"","specs":[{"k":"","v":""}],"prices":[{"source":"","price":0,"note":"جديد أو مستعمل","url":""}],"summary":""}
+القواعد: كل الأسعار بعملة ${cur} (حوّل عند الحاجة) وأرقام فقط. من 4 إلى 8 مصادر حقيقية وجدتها فعلاً ولا تخترع أسعاراً. المواصفات بالعربية (5-8 عناصر). summary جملة عربية قصيرة عن حالة السوق.`;
+  const tries=[[model,true],[model,false],['gemini-2.0-flash',true],['gemini-2.0-flash',false]];
+  let last;
+  for(const [m,s] of tries){
+    try{return await call(m,key,prompt,s)}
+    catch(e){
+      last=e;
+      if(e instanceof NetErr)break;
+      if(e.status===401||e.status===403||(e.status===400&&/api key/i.test(e.message)))break;
+    }
+  }
+  throw last;
+}
+function errMsg(e){
+  if(e instanceof NetErr)return 'تعذّر الاتصال بخوادم Gemini. تأكد من اتصال الإنترنت، وافتح التطبيق من المتصفح (Chrome) عبر رابط GitHub Pages أو من APK، لأن معاينات الملفات داخل التطبيقات الأخرى تحجب الاتصال الخارجي.';
+  const st=e.status;
+  if(st===400&&/api key/i.test(e.message))return 'مفتاح API غير صحيح. افتح ⚙️ وأدخل مفتاحاً صالحاً.';
+  if(st===401||st===403)return 'المفتاح مرفوض أو غير مفعّل لهذه الخدمة. أنشئ مفتاحاً جديداً من Google AI Studio.';
+  if(st===429)return 'تجاوزت الحد المسموح للطلبات حالياً. انتظر دقيقة ثم أعد المحاولة.';
+  if(st===404)return 'اسم النموذج غير صحيح. افتح ⚙️ واكتب gemini-2.5-flash.';
+  if(st>=500)return 'خوادم Gemini مشغولة، أعد المحاولة بعد قليل.';
+  return 'لم يتمكن الذكاء الاصطناعي من إرجاع نتيجة مفهومة، أعد المحاولة أو اكتب اسم السلعة بتفصيل أكثر.';
+}
+
+$('#go').onclick=async()=>{
+  const name=$('#name').value.trim(),price=parseFloat($('#price').value),cur=$('#cur').value;
+  if(!name||!(price>0)){$('#out').innerHTML='<div class="card err">أدخل اسم السلعة وسعرها.</div>';return}
+  if(!store.get('key','')){openSet();return}
+  store.set('cur',cur);
+  $('#go').disabled=true;
+  $('#out').innerHTML='<div class="card"><div class="spin"></div><p style="text-align:center;color:var(--mut)">Gemini يبحث في المواقع ويقارن الأسعار...</p></div>';
+  try{
+    const {data,links}=await ask(name,cur);
+    const r={name,price,cur,data,links};
+    const x=render(r);
+    if(x){const h=store.get('hist',[]);h.unshift({...r,ts:Date.now(),avg:x.avg,d:x.d,t:x.t});store.set('hist',h.slice(0,50))}
+  }catch(e){$('#out').innerHTML=`<div class="card err">⚠️ ${esc(errMsg(e))}</div>`}
+  $('#go').disabled=false;
+};
+
+function renderHist(){
+  const h=store.get('hist',[]);
+  $('#histList').innerHTML=h.length?h.map((x,i)=>`<div class="card hist" data-i="${i}"><div><b>${esc(x.name)}</b><br><small>${new Date(x.ts).toLocaleDateString('ar')} · ${fmt(x.price)} ${esc(x.cur)}</small></div><div style="text-align:left"><b>${esc(x.t)}</b><br><small>متوسط ${fmt(x.avg)}</small></div></div>`).join('')+'<button class="btn sec" id="clr">مسح السجل</button>':'<div class="card err">لا يوجد سجل بعد.</div>';
+  document.querySelectorAll('.hist').forEach(e=>e.onclick=()=>{const r=h[+e.dataset.i];document.querySelector('nav [data-p=home]').click();render(r);window.scrollTo(0,0)});
+  const c=$('#clr');if(c)c.onclick=()=>{if(confirm('مسح كل السجل؟')){store.set('hist',[]);renderHist()}};
+}
+function renderStats(){
+  const h=store.get('hist',[]);
+  const good=h.filter(x=>x.d<=0.08).length;
+  const avgD=h.length?h.reduce((a,x)=>a+x.d,0)/h.length*100:0;
+  $('#statsBox').innerHTML=`<div class="stats">
+  <div class="card stat"><b>${h.length}</b>عمليات بحث</div>
+  <div class="card stat"><b>${good}</b>أسعار جيدة</div>
+  <div class="card stat"><b>${h.length-good}</b>أسعار مرتفعة</div>
+  <div class="card stat"><b style="direction:ltr">${avgD>0?'+':''}${avgD.toFixed(0)}%</b>متوسط الفرق عن السوق</div></div>`;
+}
+if('serviceWorker' in navigator)window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+</script>
+</body>
+</html>
